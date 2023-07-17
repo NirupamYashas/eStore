@@ -1,6 +1,18 @@
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import './_top-nav.scss';
+import { Link } from 'react-router-dom';
+import GoogleLogin from 'react-google-login';
+import { gapi } from 'gapi-script';
 
 const TopNav = () => {
+    const cartItemCount = useSelector(state => state.cr.totalItems);
+    const [userDetails,setUserDetails] = useState("");
+
+    const successHandler = (res)=>{
+        setUserDetails(res.profileObj);
+        console.log(res.profileObj);
+    }
 
     return(
         <div>
@@ -22,12 +34,35 @@ const TopNav = () => {
                     </div>
                     <div className='login-container p-0'>
                         <i className='fa fa-user-circle user-icon'/>
-                        <h5> <a href='#'> Login </a></h5> / <h5> <a href='#'> Register </a></h5>
+                        <h5>
+                            {
+                                userDetails==="" ?
+                                    <GoogleLogin 
+                                        clientId='186700061116-ap08o7cieqakjfrjcosj077keqmd64ir.apps.googleusercontent.com'
+                                        buttonText='Login'
+                                        cookiePolicy='single_host_origin'
+                                        onSuccess={successHandler}
+                                    />
+                                :
+                                userDetails.name
+                            }
+                        </h5>
                     </div>
                     <div className='cart-wishlist'>
                         <ul className='p-0'>
-                        <li className='list-icon'> <i className='fa fa-heart'/> </li>
-                        <li className='list-icon'> <i className='fa fa-shopping-cart'/> </li>
+                            <li className='list-icon'> <i className='fa fa-heart'/> </li>
+                            <Link to="/cart">
+                                <li className='list-icon'> 
+                                    <i className='fa fa-shopping-cart'/> 
+                                    {
+                                        cartItemCount!==0 ?
+                                            <div id='cart-item-count'>
+                                                <p> {cartItemCount} </p>
+                                            </div>
+                                        : <></>
+                                    }
+                                </li>
+                            </Link>
                         </ul>
                     </div>
                 </div>
